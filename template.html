@@ -583,8 +583,12 @@
     if (this.idx == 1) {
       return;
     }
-    this.setCursor(this.idx - 1,
-                   this.slides[this.idx - 2].$$('.next[active]').length);
+    if (this.step == 0) {
+      this.setCursor(this.idx - 1, this.slides[this.idx - 2].$$('.next[active]').length);
+    }
+    else {
+      this.setCursor(this.idx, this.step - 1);
+    }
   }
 
   Dz.forward = function() {
@@ -592,11 +596,10 @@
         this.step >= this.slides[this.idx - 1].$$('.next').length) {
         return;
     }
-    if (this.html.classList.contains("view") ||
-        this.step >= this.slides[this.idx - 1].$$('.next').length) {
-      this.setCursor(this.idx + 1,
-                     this.slides[this.idx].$$('.next[active]').length);
-    } else {
+    if (this.step + 1 > this.slides[this.idx - 1].$$('.next').length) {
+      this.setCursor(this.idx + 1, 0);
+    }
+    else {
       this.setCursor(this.idx, this.step + 1);
     }
   }
@@ -653,6 +656,11 @@
             return Number(a.getAttribute('next-order')) - Number(b.getAttribute('next-order'));
           });
     var next = incrementals[this.step - 1];
+    for (let i=this.step - 1; i < incrementals.length; i++) {
+      if (incrementals[i]) {
+        incrementals[i].removeAttribute('active');
+      }
+    }
     if (next) {
       next.setAttribute('active', true);
     } else {
